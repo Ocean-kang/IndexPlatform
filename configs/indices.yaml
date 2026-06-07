@@ -19,6 +19,11 @@ indices:
     market: CN
     currency: CNY
     source: local
+  - symbol: 399006.SZ
+    name: 创业板指
+    market: CN
+    currency: CNY
+    source: local
   - symbol: HSI.HK
     name: 恒生指数
     market: HK

@@ -6,7 +6,7 @@ from index_platform.universe.registry import IndexInfo, filter_indices_by_market
 def test_load_all_indices() -> None:
     indices = load_indices()
 
-    assert len(indices) == 11
+    assert len(indices) == 12
     assert indices[0] == IndexInfo(
         symbol="000300.SH",
         name="沪深300",
@@ -19,6 +19,7 @@ def test_load_all_indices() -> None:
         "000905.SH",
         "000852.SH",
         "000016.SH",
+        "399006.SZ",
         "HSI.HK",
         "HSCEI.HK",
         "HSTECH.HK",
@@ -39,6 +40,7 @@ def test_filter_indices_by_market() -> None:
         "000905.SH",
         "000852.SH",
         "000016.SH",
+        "399006.SZ",
     ]
     assert [index.symbol for index in hk_indices] == ["HSI.HK", "HSCEI.HK", "HSTECH.HK"]
     assert [index.symbol for index in us_indices] == ["SPX.US", "IXIC.US", "NDX.US", "DJI.US"]
