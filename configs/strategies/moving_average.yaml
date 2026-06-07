@@ -1,0 +1,14 @@
+strategy_name: moving_average
+symbols: [000300.SH]
+start_date: null
+end_date: null
+initial_nav: 1.0
+benchmark: 000300.SH
+rebalance_frequency: daily
+transaction_cost:
+  commission_rate: 0.0
+  slippage_rate: 0.0
+execution_rule: next_close
+strategy_params:
+  window: 20
+  execution_delay: 1

@@ -1,0 +1,16 @@
+strategy_name: momentum
+symbols: [000300.SH, 000905.SH]
+start_date: null
+end_date: null
+initial_nav: 1.0
+benchmark: 000300.SH
+rebalance_frequency: 20
+transaction_cost:
+  commission_rate: 0.0
+  slippage_rate: 0.0
+execution_rule: next_close
+strategy_params:
+  lookback: 20
+  top_k: 1
+  rebalance_frequency: 20
+  execution_delay: 1

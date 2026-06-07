@@ -1,0 +1,12 @@
+strategy_name: buy_hold
+symbols: [000300.SH]
+start_date: null
+end_date: null
+initial_nav: 1.0
+benchmark: 000300.SH
+rebalance_frequency: none
+transaction_cost:
+  commission_rate: 0.0
+  slippage_rate: 0.0
+execution_rule: next_close
+strategy_params:

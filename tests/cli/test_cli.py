@@ -75,3 +75,18 @@ def test_report_show_command(tmp_path: Path) -> None:
 
     assert result.exit_code == 0
     assert "total_return: 0.1" in result.output
+
+
+def test_monitor_status_command(tmp_path: Path) -> None:
+    state_dir = tmp_path / "run_state"
+    state_dir.mkdir()
+    (state_dir / "run_1.json").write_text(
+        '{"run_id": "run_1", "state": "success", "updated_at": "2024-01-01T00:00:00Z", "message": ""}',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["monitor", "status", "--state-dir", str(state_dir)])
+
+    assert result.exit_code == 0
+    assert "run_1" in result.output
+    assert "success" in result.output

@@ -7,13 +7,14 @@ from pathlib import Path
 import typer
 
 from index_platform import __version__
-from index_platform.cli import backtest_cmd, data_cmd, report_cmd
+from index_platform.cli import backtest_cmd, data_cmd, monitor_cmd, report_cmd
 from index_platform.universe import filter_indices_by_market, load_indices
 
 app = typer.Typer(help="IndexPlatform research and backtesting CLI.", no_args_is_help=True)
 data_app = typer.Typer(help="Local price data commands.")
 backtest_app = typer.Typer(help="Backtest commands.")
 report_app = typer.Typer(help="Report commands.")
+monitor_app = typer.Typer(help="Run monitor commands.")
 
 
 @app.callback()
@@ -40,11 +41,14 @@ def list_indices(
 data_app.command("import")(data_cmd.import_price_data)
 data_app.command("status")(data_cmd.show_data_status)
 backtest_app.command("run")(backtest_cmd.run_buy_hold_backtest)
+backtest_app.command("sweep")(backtest_cmd.run_sweep)
 report_app.command("show")(report_cmd.show_report)
+monitor_app.command("status")(monitor_cmd.show_run_states)
 
 app.add_typer(data_app, name="data")
 app.add_typer(backtest_app, name="backtest")
 app.add_typer(report_app, name="report")
+app.add_typer(monitor_app, name="monitor")
 
 
 def build_parser() -> typer.Typer:
