@@ -7,6 +7,7 @@ from pathlib import Path
 import typer
 
 from index_platform.data import read_price_csv
+from index_platform.data.fetcher import fetch_price_data
 from index_platform.data.quality import check_daily_price_quality, summarize_data_status
 from index_platform.storage import load_price_data, save_price_data
 
@@ -52,3 +53,44 @@ def show_data_status(
             typer.echo(f"- {issue.rule}: {issue.message} rows={issue.rows}")
     else:
         typer.echo("Quality issues: none")
+
+
+def fetch_online_price_data(
+    symbol: str | None = typer.Option(None, "--symbol", help="Registered index symbol to fetch."),
+    market: str | None = typer.Option(None, "--market", help="Fetch all registered indices in this market."),
+    fetch_all: bool = typer.Option(False, "--all", help="Fetch all registered indices."),
+    start_date: str | None = typer.Option(None, "--start-date", help="Start date, for example 2010-01-01."),
+    end_date: str | None = typer.Option(None, "--end-date", help="End date, for example 2026-06-07."),
+    data_dir: Path = typer.Option(Path("data/parquet"), "--data-dir", help="Local Parquet data directory."),
+    registry: Path | None = typer.Option(None, "--registry", help="Path to indices.yaml."),
+) -> None:
+    """Fetch registered index daily prices from online data sources."""
+    try:
+        result = fetch_price_data(
+            data_dir=data_dir,
+            start_date=start_date,
+            end_date=end_date,
+            symbol=symbol,
+            market=market,
+            fetch_all=fetch_all,
+            registry=registry,
+        )
+    except ValueError as exc:
+        typer.echo(f"Error: {exc}")
+        raise typer.Exit(code=1) from exc
+
+    typer.echo(f"Success: {len(result.success_symbols)}")
+    typer.echo(f"Failed: {len(result.failures)}")
+    if result.output_file is not None:
+        typer.echo(f"Fetched rows: {result.rows}")
+        typer.echo(f"Saved to: {result.output_file}")
+    else:
+        typer.echo("No data was saved.")
+
+    if result.failures:
+        typer.echo("Failures:")
+        for failure in result.failures:
+            typer.echo(f"- {failure.symbol}: {failure.reason}")
+
+    if not result.success_symbols:
+        raise typer.Exit(code=1)

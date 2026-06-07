@@ -54,6 +54,15 @@ def test_data_import_and_status_commands(tmp_path: Path) -> None:
     assert "000300.SH" in status_result.output
 
 
+def test_data_fetch_help_is_available() -> None:
+    result = runner.invoke(app, ["data", "fetch", "--help"])
+
+    assert result.exit_code == 0
+    assert "--symbol" in result.output
+    assert "--market" in result.output
+    assert "--all" in result.output
+
+
 def test_backtest_run_command(tmp_path: Path) -> None:
     csv_file = tmp_path / "prices.csv"
     data_dir = tmp_path / "parquet"

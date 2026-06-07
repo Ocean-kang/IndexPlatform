@@ -40,6 +40,7 @@ def list_indices(
 
 data_app.command("import")(data_cmd.import_price_data)
 data_app.command("status")(data_cmd.show_data_status)
+data_app.command("fetch")(data_cmd.fetch_online_price_data)
 backtest_app.command("run")(backtest_cmd.run_buy_hold_backtest)
 backtest_app.command("sweep")(backtest_cmd.run_sweep)
 report_app.command("show")(report_cmd.show_report)

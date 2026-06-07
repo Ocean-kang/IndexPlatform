@@ -160,6 +160,43 @@ python -m index_platform.cli.main monitor status
 python -m index_platform.cli.main report show --run-id <run_id> --runs-dir outputs/backtests
 ```
 
+## 自动下载指数历史数据
+
+`data import` 用于导入已经准备好的本地 CSV 文件；`data fetch` 用于从在线数据源提取注册表中的指数日线数据。两者最终都会写入本地 `data/parquet/prices.parquet`，供 CLI、回测引擎和 Dashboard 复用。
+
+在线提取当前按市场选择数据源：
+
+- CN 市场优先使用 AKShare，平台 symbol 会映射为 AKShare symbol，例如 `000300.SH -> sh000300`。
+- US 市场使用 yfinance，例如 `SPX.US -> ^GSPC`。
+- HK 市场使用港股 yfinance 适配器，例如 `HSI.HK -> ^HSI`。
+
+如果还没有安装在线数据源依赖，Windows + Miniconda 环境中可运行：
+
+```powershell
+conda activate indexplatform
+python -m pip install akshare yfinance
+```
+
+下载单个指数：
+
+```powershell
+python -m index_platform.cli.main data fetch --symbol 000300.SH --start-date 2010-01-01 --end-date 2026-06-07 --data-dir data/parquet
+```
+
+下载某个市场的全部注册指数：
+
+```powershell
+python -m index_platform.cli.main data fetch --market CN --start-date 2010-01-01 --end-date 2026-06-07 --data-dir data/parquet
+```
+
+下载注册表里的全部指数：
+
+```powershell
+python -m index_platform.cli.main data fetch --all --start-date 2010-01-01 --end-date 2026-06-07 --data-dir data/parquet
+```
+
+`data fetch` 会先下载本次目标指数，再和已有 `prices.parquet` 合并，按 `symbol + date` 去重，并让新下载的数据覆盖旧数据。批量下载时，单个指数失败不会中断其它指数保存；命令最后会输出成功数量、失败数量和失败列表。
+
 ## 示例数据导入
 
 示例数据位于：
