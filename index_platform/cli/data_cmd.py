@@ -7,6 +7,7 @@ from pathlib import Path
 import typer
 
 from index_platform.data import read_price_csv
+from index_platform.data.quality import check_daily_price_quality, summarize_data_status
 from index_platform.storage import load_price_data, save_price_data
 
 
@@ -33,7 +34,21 @@ def show_data_status(
     symbols = ", ".join(sorted(prices["symbol"].unique()))
     start_date = prices["date"].min().date()
     end_date = prices["date"].max().date()
+    summary = summarize_data_status(prices)
+    issues = check_daily_price_quality(prices)
+
     typer.echo(f"Rows: {len(prices)}")
     typer.echo(f"Symbols: {symbols}")
     typer.echo(f"Date range: {start_date} to {end_date}")
-
+    typer.echo("Per-symbol status:")
+    for row in summary.itertuples(index=False):
+        typer.echo(
+            f"- {row.symbol}: rows={row.rows}, date_range={row.start_date} to {row.end_date}, "
+            f"quality_issues={row.quality_issues}"
+        )
+    if issues:
+        typer.echo("Quality issues:")
+        for issue in issues:
+            typer.echo(f"- {issue.rule}: {issue.message} rows={issue.rows}")
+    else:
+        typer.echo("Quality issues: none")
