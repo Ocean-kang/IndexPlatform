@@ -1,82 +1,150 @@
 # IndexPlatform
 
-IndexPlatform is a local-first index investment research platform.
+IndexPlatform is a local-first index investment research and backtesting platform. The current phase focuses on daily data research, local storage, strategy backtests, reports, and a lightweight Streamlit dashboard.
 
-The first phase focuses on research and backtesting only. It does not include
-live trading, broker integrations, minute-level trading, machine learning
-prediction, or production deployment.
+This project is not a live trading system and does not provide investment advice.
 
-## Current Progress
+## Current Capabilities
 
-The repository currently includes:
+- Index registry from `configs/indices.yaml`, with market filtering.
+- Daily price CSV import, schema normalization, and data-quality checks.
+- Local Parquet storage and optional DuckDB querying for local analysis.
+- A-share, Hong Kong, and US data-source adapter skeletons for AKShare and yfinance-compatible data.
+- Buy-and-hold, moving-average timing, and momentum rotation strategies.
+- Long-only daily backtests with basic transaction cost support.
+- Backtest result storage, report generation, parameter sweep, and walk-forward helpers.
+- Performance metrics: total return, annualized return, volatility, max drawdown, Sharpe, and Calmar.
+- Streamlit dashboard pages for data status, index view, backtest results, strategy lab, and run monitor.
+- Run-state and log files for local backtest monitoring.
+- Lightweight prediction module with simple baseline predictors only.
+- ETF mapping registry for research lookup only.
 
-- Task 001: project initialization
-- Task 002: index registry
-- Task 003: CSV data import
-- Task 004: local Parquet storage
-- Task 005: buy_hold backtest
-- Task 006: performance metrics
-- Task 007: basic CLI
+## Not Implemented
 
-## Available CLI
+- Live trading, broker APIs, order placement, or account integration.
+- Minute-level or intraday trading.
+- Short selling, leverage, margin trading, futures, options, or financing.
+- Production-grade machine learning, deep learning, model training systems, model persistence, or automated tuning.
+- Cloud deployment, user accounts, permissions, or multi-user scheduling.
+- Guaranteed data availability from third-party sources.
 
-The CLI can be run through the installed `idx` entry point or directly with
-`python -m index_platform.cli.main`.
+## Installation
+
+Use Python 3.10 or newer.
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
+Optional runtime adapters need their own libraries when used outside tests:
+
+```bash
+python -m pip install akshare yfinance
+```
+
+## Directory Structure
+
+```text
+index_platform/
+  analysis/      index comparison helpers
+  backtest/      backtest engines, costs, and runners
+  calendar/      simple trading calendar helpers
+  cli/           Typer CLI wrappers
+  config/        YAML backtest config loader
+  dashboard/     Streamlit pages
+  data/          schemas, CSV import, validation, adapters
+  fx/            local FX data helpers
+  metrics/       performance metrics
+  monitor/       run state and logs
+  prediction/    lightweight baseline prediction interfaces
+  research/      parameter sweep and walk-forward helpers
+  storage/       Parquet and backtest result storage
+  strategy/      strategy implementations
+  universe/      index registry and ETF mapping
+
+configs/
+docs/
+tests/
+```
+
+## Data Preparation
+
+Daily price CSV files must include:
+
+```text
+date,symbol,open,high,low,close,volume,amount,currency,source
+```
+
+Import local data into Parquet storage:
+
+```bash
+python -m index_platform.cli.main data import examples/data/sample_index_prices.csv --data-dir data/parquet
+```
+
+Check local data status:
+
+```bash
+python -m index_platform.cli.main data status --data-dir data/parquet
+```
+
+## CLI Usage
 
 ```bash
 python -m index_platform.cli.main --help
 python -m index_platform.cli.main list-indices
-python -m index_platform.cli.main data import path/to/prices.csv --data-dir data/parquet
-python -m index_platform.cli.main data status --data-dir data/parquet
-python -m index_platform.cli.main backtest run 000300.SH --data-dir data/parquet
-python -m index_platform.cli.main report show path/to/metrics.json
+python -m index_platform.cli.main list-indices --market CN
+python -m index_platform.cli.main monitor status
 ```
 
-## Data Scope
+If installed as an editable package, the `idx` entry point is also available.
 
-Daily price CSV files must include:
+## Backtest Examples
 
-- `date`
-- `symbol`
-- `open`
-- `high`
-- `low`
-- `close`
-- `volume`
-- `amount`
-- `currency`
-- `source`
-
-CSV data is normalized by the core data module, then can be saved to local
-Parquet storage. The CLI calls the same core modules used by tests and future
-interfaces.
-
-## Development
-
-Install development dependencies:
+Run a single-symbol buy-and-hold backtest:
 
 ```bash
-pip install -e ".[dev]"
+python -m index_platform.cli.main backtest run 000300.SH --data-dir data/parquet
 ```
 
-Run tests:
+Run a YAML-configured backtest and save results:
+
+```bash
+python -m index_platform.cli.main backtest run --config examples/configs/buy_hold_demo.yaml --data-dir data/parquet --output-dir outputs/backtests
+```
+
+Show a saved report:
+
+```bash
+python -m index_platform.cli.main report show --run-id <run_id> --runs-dir outputs/backtests
+```
+
+## Dashboard
+
+Start the local dashboard:
+
+```bash
+streamlit run index_platform/dashboard/app.py
+```
+
+The dashboard reuses core storage, metrics, report, and backtest modules. It is a local research UI, not a trading terminal.
+
+## Tests
+
+Run the offline test suite:
 
 ```bash
 pytest
 ```
 
-Show CLI help:
+Data-source adapter tests use mocked or toy DataFrames and do not make real network requests.
 
-```bash
-python -m index_platform.cli.main --help
-```
+## Data Sources
+
+- Local CSV is the primary reproducible input path.
+- Parquet is the primary local storage format.
+- AKShare and yfinance adapters are thin optional wrappers that standardize downloaded data into the DailyPrice schema.
+- ETF mappings in `configs/etf_mapping.yaml` are research metadata only and do not imply tradability or order support.
 
 ## Current Limits
 
-- Research and backtesting only
-- Daily data only
-- No live trading or broker API
-- No real data source download adapters
-- No dashboard yet
-- No monitoring yet
-- Only the first buy-and-hold strategy is implemented
+The platform is intended for research and educational backtesting with daily data. Results depend on input data quality and simplified assumptions. It does not promise returns, execute trades, connect to brokers, or replace professional financial advice.

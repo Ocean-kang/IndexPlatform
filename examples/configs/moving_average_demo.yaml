@@ -1,0 +1,11 @@
+strategy_name: moving_average
+symbols: [000300.SH]
+start_date: 2024-01-02
+end_date: 2024-01-11
+initial_nav: 1.0
+benchmark: 000300.SH
+execution_rule: next_close
+strategy_params:
+  window: 3
+  hold_when_above: true
+  execution_delay: 1

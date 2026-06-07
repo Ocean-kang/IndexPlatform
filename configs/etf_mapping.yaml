@@ -1,0 +1,21 @@
+- index_symbol: 000300.SH
+  etf_symbol: 510300.SH
+  etf_name: CSI 300 ETF
+  market: CN
+  currency: CNY
+  expense_ratio: 0.005
+  source: sample
+- index_symbol: HSI.HK
+  etf_symbol: 2800.HK
+  etf_name: Tracker Fund of Hong Kong
+  market: HK
+  currency: HKD
+  expense_ratio: 0.001
+  source: sample
+- index_symbol: SPX.US
+  etf_symbol: SPY
+  etf_name: SPDR S&P 500 ETF Trust
+  market: US
+  currency: USD
+  expense_ratio: 0.000945
+  source: sample

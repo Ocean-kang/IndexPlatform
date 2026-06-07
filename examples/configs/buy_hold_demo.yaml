@@ -1,0 +1,8 @@
+strategy_name: buy_hold
+symbols: [000300.SH]
+start_date: 2024-01-02
+end_date: 2024-01-11
+initial_nav: 1.0
+benchmark: 000300.SH
+execution_rule: next_close
+strategy_params:

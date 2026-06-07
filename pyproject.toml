@@ -16,6 +16,7 @@ dependencies = [
   "pandas>=2.0",
   "numpy>=1.24",
   "pyarrow>=15.0",
+  "duckdb>=0.10",
   "rich>=13.0",
   "streamlit>=1.35",
   "typer>=0.12"
@@ -23,7 +24,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "pytest>=8.0"
+  "pytest>=8.0",
+  "ruff>=0.5"
 ]
 
 [project.scripts]
@@ -36,3 +38,14 @@ include = ["index_platform*"]
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-q"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["index_platform"]
